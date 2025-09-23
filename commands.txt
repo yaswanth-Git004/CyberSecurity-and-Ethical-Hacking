@@ -1,0 +1,113 @@
+#FILE SYSTEM AND NAVIGATION 
+pwd                        # print working directory
+ls -la                     # list files (long, show hidden)
+cd /path/to/dir             # change directory
+mkdir -p projects/lab      # make directory and parents
+cp file1 file2             # copy file
+mv oldname newname         # move/rename
+rm file                    # delete file
+rm -rf dir/                # delete directory recursively (DANGEROUS)
+
+#VIEW AND EDIT FILES
+cat file.txt               # print file contents
+less file.txt              # paged view (q to quit)
+head -n 20 file.txt        # first 20 lines
+tail -f /var/log/syslog    # follow appended log
+nano file.txt              # easy editor (Ctrl+O to save, Ctrl+X to exit)
+vim file.txt               # advanced editor
+
+#PERMISSIONS AND OWNERSHIP
+ls -l                      # show permissions & owner
+chmod 755 script.sh        # set rwx r-x r-x
+chmod +x script.sh         # make executable
+chown user:group file      # change owner and group
+
+#PACKAGE MANAGEMENT(KALI/DEBIAN)
+sudo apt update
+sudo apt upgrade -y
+sudo apt install packagename -y
+sudo apt remove packagename
+
+#NETWORKING BASICS 
+ip a                       # show interfaces & IPs
+ip route                   # show routing table
+ping -c 4 8.8.8.8          # ping (4 packets)
+traceroute example.com     # trace path to host
+ss -tulnp                  # show listening sockets + PIDs
+ifconfig                   # older tool, may not exist by default
+
+#SCANNING AND NETWORK DISCOVERY(DEMO COMMANDS)
+# quick SYN scan (scan a host)
+nmap -sS -Pn <target-ip> -oN nmap_quick.txt
+
+# service/version + OS detection
+nmap -sV -O <target-ip> -oN nmap_version_os.txt
+
+# aggressive scan (fast, verbose)
+nmap -A -T4 <target-ip> -oN nmap_aggressive.txt
+
+# scan an entire host subnet
+nmap -sS 192.168.56.0/24 -oN nmap_subnet.txt
+
+#PACKET CAPTURE(WITESHARK/TSHARK/TCPDUMP)
+# GUI (run from desktop session)
+sudo wireshark
+
+# CLI capture to file (30 seconds)
+sudo tshark -i eth0 -a duration:30 -w /tmp/demo_capture.pcap
+
+# tcpdump (CLI)
+sudo tcpdump -i eth0 -w /tmp/demo_tcpdump.pcap
+
+# read pcap with tshark
+tshark -r /tmp/demo_capture.pcap
+#REMOTE ACCESS AND FILE TRANSFER 
+ssh user@192.168.56.101
+scp localfile user@192.168.56.101:/home/user/
+rsync -avz localdir/ user@host:/remote/dir
+#PROCESS AND SYSTEM INSPECTION
+top                       # interactive process viewer
+htop                      # nicer (install with apt)
+ps aux | grep ssh         # find processes
+kill PID                  # friendly kill
+kill -9 PID               # force kill
+df -h                     # disk usage (human)
+du -sh folder/            # folder size
+
+#SEARCHING AND TEXT PROCESSING 
+find / -name "file.txt" 2>/dev/null
+grep -R "password" /path
+grep -n "pattern" file
+awk '{print $1}' file
+cut -d: -f1 /etc/passwd
+sed -n '1,20p' file
+
+
+#COMPRESSION AND ARCHIVING 
+tar -czvf archive.tar.gz folder/
+tar -xzvf archive.tar.gz
+zip file.zip file1 file2
+unzip file.zip
+
+#OpenSSL(Generate key,encrypt , decrypt)
+mkdir -p ~/secure_keys
+openssl rand -base64 32 > ~/secure_keys/key.bin
+chmod 600 ~/secure_keys/key.bin
+
+#ENCRYPT
+openssl enc -aes-256-cbc -salt -in message.txt -out message.txt.enc -pass file:~/secure_keys/key.bin
+
+#DECRYPT
+openssl enc -d -aes-256-cbc -in message.txt.enc -out message_decrypted.txt -pass file:~/secure_keys/key.bin
+#HANDY DEMO UTILITIES 
+# record terminal session (good for demos)
+script demo_shell.log
+# run commands, then type 'exit' to stop recording
+
+# show recent commands
+history | tail -n 50
+
+# quick aliases (put in ~/.bashrc)
+echo "alias ll='ls -la'" >> ~/.bashrc
+echo "alias ports='ss -tulnp'" >> ~/.bashrc
+source ~/.bashrc
